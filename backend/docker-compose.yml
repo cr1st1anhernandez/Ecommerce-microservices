@@ -1,10 +1,27 @@
-version: "3.8"
+version: "3.9"
 
 services:
   auth-service:
-    build: ./auth-service
+    build:
+      context: ./auth-service
     ports:
       - "8081:8081"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://auth-db:5432/auth_db
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    depends_on:
+      - auth-db
+    env_file:
+      - .env.auth-db
+
+  auth-db:
+    image: postgres
+    restart: always
+    shm_size: 128mb
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env.auth-db
 
   cart-service:
     build: ./cart-service
